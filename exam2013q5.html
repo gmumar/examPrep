@@ -1,0 +1,181 @@
+view/newUser.php
+
+<HTML>
+<...>
+
+<H1> New User </H1>
+
+<?php
+	echo form_open('main/newUser');
+	echo form_label('Name');
+	echo form_input('name', 'Name');
+	echo form_submit('submit', 'Submit');
+	echo form_close();
+?>
+
+</...>
+</HTML>
+-----------------------------------------------------------
+view/pairing.php
+
+<HTML>
+<script src="jquery"/>
+<script src="jquery.timers"/>
+
+<script>
+	
+	$(function() {
+		$("#available").everyTime(1000,function(){
+
+			$('#available').load('<?= base_url() ?>main/availableUsers');
+
+			$.getJSON('<?= base_url() ?>main/isPartnered',function(data,text, jqZHR){
+				if(data){
+					if(data.paired){
+						alert("partner found");
+					}
+				}
+			})
+
+		})
+	})	
+
+</script>
+
+<...>
+
+<H1> Easy Pairing </H1>
+<?php 
+	if(isset($status) && $status == 'fail')
+		echo "Sorry not gona happen"
+?>
+
+<p> Some text </p>
+
+<div id="available">
+</div> 
+
+</...>
+</HTML>
+
+------------------------------------------------------
+
+view/success.php
+
+<HTML>
+
+<...>
+
+<H1> Easy Pairing </H1>
+
+<p> Success <?= $user ?></p>
+
+</...>
+</HTML>
+
+------------------------------------------------------
+
+view/usersTable.php
+
+<td>
+<?= anchor("main/invite?user=" . $user->id, $user->name) ?>
+</td>
+
+All the code from availableUsers.php
+
+
+<table>
+-------------------------------------------------------
+main.php
+
+class main extends CI_Controller{
+
+	function index(){
+		$this->load->view(newUser);
+	}
+
+	function __construct(){
+		parent::__construct();
+		start_session();
+	}
+
+	function newUser(){
+
+		$this->load->library("form_validation");
+		$this->form_validtion->set_rules('name', 'Name', 'required|unique[user.name]');
+
+		if($this->form_validation->run()==false){
+			$this->load->view(newUser);
+		}
+		
+		$this->load->model("User_model");
+
+		$name = $this->input->post('name');
+		$userid = $this->User_model->insert($name);
+
+		$_SESSION['user'] = $name;
+		$_SESSION['userid'] = $userid;
+
+		$this->load->view(pairing);
+	}
+
+	function availableUsers(){
+		$this->load->model("User_model");
+		$users = $this->User_model->getAvailable();
+		$data['users'] = $users;
+		$this->load->view('view/usersTable', data);
+	}
+	
+	function invite(){
+		$otheruserid = $this->input->get('user');
+
+		$this->load->model("User_model");
+
+		$dbentery = $this->User_model->getExclusive($otheruserid);
+
+
+		if($dbentery==NULL){
+			$data['status'] = 'fail';
+			$this->load->view(pairing, $data);
+		}else{
+
+			$this->db->trans_begin();
+			$this->user_model->updatePartner($_SESSION['userid'], $dbentery->id);
+			$this->user_model->updatePartner($dbentery->id, $_SESSION['userid']);
+
+			$data['status'] = 'success';
+			$data['user'] = $dbentery->name;
+			$this->load->view(success, $data);
+
+			if($this->db->status() == TRUE){
+				$this->db->trans_commit();
+			}else{
+				$this->db->trans_roll_back();
+			}
+		}
+
+	}
+
+	function isPartnered(){
+		$this->load->model("User_model");		
+		$partner = $this->user_model->getPartner($_SESSION['userid']);
+
+		if($partner == NULL){
+			$msg = array('paired'=> false);
+			echo json_encode($msg);
+		}else{
+			$msg = array('paired'=> true);
+			echo json_encode($msg);
+		}
+
+	}
+
+	function gotoSuccess(){
+		$this->load->model("User_model");		
+		$partner = $this->user_model->getPartner($_SESSION['userid']);
+
+		$data['user'] = $partner;
+		$this->load->view(success,$data);
+	}
+
+}

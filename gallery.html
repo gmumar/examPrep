@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <title>Gallery</title>
+ <script src="http://code.jquery.com/jquery-latest.js"></script>
+<style>
+img {
+	width: 70px;
+	height: 70px;
+}
+
+ </style>
+<script>
+
+count = 5;
+
+ $(function(){
+ 	console.log("loaded");
+ 	for(i=1;i<=count;i++){
+ 		str = "#pic"+i;
+ 		$(str).bind("click", clicked);
+ 	}
+ })
+
+clicked = function(){
+	console.log("clicked " + this.id);
+ 	for(i=1;i<=count;i++){
+ 		str = "#pic"+i;
+ 		$(str).animate({
+			width: "70px",
+			height: "70px"
+		},1000)
+ 	}
+
+	$("#"+this.id).animate({
+		width: "170px",
+		height: "170px"
+	},1000,function(){
+		console.log("done");
+	})
+}
+
+</script>
+</head>
+<body>
+<H1>Gallery </H1>
+
+<div>
+<img src="1.png" id="pic1"> </img>
+<img src="2.png" id="pic2"> </img>
+<img src="3.png" id="pic3"> </img>
+<img src="4.png" id="pic4"> </img>
+<img src="5.png" id="pic5"> </img>
+
+</div>
+
+</body>
+</html>

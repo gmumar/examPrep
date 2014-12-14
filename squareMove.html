@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <title>Animated Square</title>
+ <script src="http://code.jquery.com/jquery-latest.js"></script>
+<style>
+canvas {
+ border: 1px dashed black;
+}
+ </style>
+<script>
+
+	xloc = 0;
+	$(function(){
+
+		can = $("#drawingCanvas")[0];
+		con = can.getContext("2d");
+		con.strokeStyle = "red";
+
+		$("#drawingCanvas").bind("click",function(){
+			id = window.setInterval("animate()",1000/30);
+		});
+
+		drawSquare(0,0);
+
+	});
+
+	animate = function(){
+		con.clearRect(0,0,can.width,can.height);
+		drawSquare(xloc,0);
+		xloc ++;
+
+		if(xloc>can.width)
+			window.clearInterval(id);
+	}
+
+	drawSquare = function(x,y){
+
+		sheight = 20;
+		swidth = 20;
+
+		con.beginPath();
+		con.moveTo(x,y);
+		con.lineTo(x+swidth,y);
+		con.lineTo(x+swidth,y+sheight);
+		con.lineTo(x,y+sheight);
+		con.closePath();
+
+		con.stroke();
+
+	}
+
+
+</script>
+</head>
+<body>
+ <canvas id="drawingCanvas" width="300" height="200"></canvas>
+</body>
+</html>

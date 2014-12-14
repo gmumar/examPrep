@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <title>Animated Square</title>
+ <script src="http://code.jquery.com/jquery-latest.js"></script>
+<style>
+
+</style>
+<script>
+
+	xloc = 0;
+	$(function(){
+
+		width = $(document).width();
+		heigth = $(document).height();
+
+		bugx = Math.random()*(width);
+		bugy = Math.random()*(heigth);
+
+		console.log("loaded " + width + " " + heigth);
+
+		time = 10000
+		score = 0
+
+		$('#title').html("Time Left " + time);
+		$('#score').html("Score " + score);
+		bug = $("#bug");
+
+		bug.offset( {left: bugx,top: bugy});
+		bug.bind("click", clicked);
+
+		window.setInterval(tick,1000);
+
+	});
+
+clicked = function(){
+	bugx = Math.random()*(width);
+	bugy = Math.random()*(heigth);
+
+	str =  bugx + "px"
+	str1 =  bugy + "px"
+
+	//bug.offset( {left: bugx,top: bugy});
+	score += 1;
+	$('#score').html("Score " + score);
+
+	bug.animate({
+		left: str,
+		top: str1
+	},100, function(){
+		console.log("done animation")
+	});
+
+
+}
+
+tick = function(){
+	time -= 1;
+	if(time<0){
+		time = 10000
+		score = 0;
+	}
+	$('#title').html("Time Left " + time);
+	$('#score').html("Score " + score);
+
+}
+
+
+</script>
+</head>
+<body>
+<h2 id="title"></h2>
+<h2 id="score"></h2>
+<img src="ball.png" id="bug"/>
+
+</body>
+</html>
