@@ -1,0 +1,40 @@
+<html>
+<head>
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+
+$(function(){
+	console.log("loaded");
+
+	for(i=1;i<4;i++){
+
+		div = document.createElement('span')
+		img = document.createElement('img')
+		img.src = i + ".png";
+		img.id = "bla"+i;
+		img.style.width = "70px"
+
+		div.appendChild(img)
+		$("#list").append(div);
+
+		$("#bla" + i).bind("click", clicked);
+	}
+
+})
+
+clicked = function (){
+	console.log("clicked " + this.id);
+}
+
+</script>
+
+
+</head>
+
+<body>
+
+<div id="list"/>
+</body>
+
+</html>

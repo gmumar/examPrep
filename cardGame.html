@@ -1,0 +1,133 @@
+<html>
+<head>
+
+<style type="text/css">
+img{
+	width: 70px;
+	height: 70px;
+}
+</style>
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+
+function card(id,url){
+	this.id = id;
+	this.url = url;
+}
+
+c1 = new card(1,"2.png");
+c2 = new card(2,"3.png");
+c3 = new card(3,"4.png");
+
+row1 = [c1,c3,c2];
+row2 = [c3,c2,c1];
+
+board = [row1,row2];
+
+rows=0;
+cols=0;
+
+$(function(){
+	
+	init();
+
+	printBoard();
+
+})
+
+init = function(){
+
+	rows = board.length;
+	cols = board[0].length;
+
+	state = [];
+
+	for(i=0;i<cols;i++){
+		state[i] = [];
+	}
+
+	for(i=0;i<cols;i++){
+		for(j=0;j<rows;j++){
+			state[i][j] = 0;
+		}
+	}
+
+}
+
+printBoard = function(){
+
+	$("#board").html("");
+	for(i=0;i<cols;i++){
+		div = document.createElement('div');	
+		for(j=0;j<rows;j++){
+			img = document.createElement('img');
+			img.id = "pic"+i+j;
+
+			if(state[i][j]==0){
+				img.src = "1.png";
+				
+			}else if(state[i][j]==1){
+				img.src = board[j][i].url;
+
+			}
+			div.appendChild(img);
+			
+		}
+
+		$("#board").append(div);
+	}
+
+	for(i=0;i<cols;i++){
+		for(j=0;j<rows;j++){
+			$("#pic"+i+j).bind("click", clicked);
+		}
+	}
+
+}
+
+clicked = function(){
+	console.log(this.id);
+	str = this.id;
+
+	colNum = parseInt(str.charAt(3))
+	rowNum = parseInt(str.charAt(4))
+
+	state[colNum][rowNum] = 1;
+	id = board[rowNum][colNum].id;
+
+	for(i=0;i<cols;i++){
+		for(j=0;j<rows;j++){
+
+			if(j==rowNum)
+				continue;
+
+			if(state[i][j]==1){
+				if(id == board[j][i].id){
+					console.log("match");
+					state[i][j] = 2;
+					state[colNum][rowNum] = 2;
+				}else{
+					state[i][j] = 0;
+					state[colNum][rowNum] = 0;
+				}
+			}
+
+		}
+	}
+
+	printBoard();
+}
+
+</script>
+
+
+</head>
+
+<body>
+
+<div id="board"></div>
+
+</body>
+
+</html>
